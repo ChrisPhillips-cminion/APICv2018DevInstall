@@ -1,0 +1,2113 @@
+sudo sysctl -w vm.max_map_count=262144
+vm.max_map_count = 262144
+sudo swapoff -a # Kubernetes won't 	with swap enabled.	This is the Ubuntu method of disabling
+rm -rf tmp
+sudo kubeadm reset
+[preflight] Running pre-flight checks.
+[reset] Stopping the kubelet service.
+[reset] Unmounting mounted directories in "/var/lib/kubelet"
+[reset] Removing kubernetes-managed containers.
+[reset] Deleting contents of stateful directories: [/var/lib/kubelet /etc/cni/net.d /var/lib/dockershim /var/run/kubernetes /var/lib/etcd]
+[reset] Deleting contents of config directories: [/etc/kubernetes/manifests /etc/kubernetes/pki]
+[reset] Deleting files: [/etc/kubernetes/admin.conf /etc/kubernetes/kubelet.conf /etc/kubernetes/bootstrap-kubelet.conf /etc/kubernetes/controller-manager.conf /etc/kubernetes/scheduler.conf]
+sudo rm -rf ../.kube
+sudo rm -rf ../.helm
+rm -rf myinstall || true
+sudo kubeadm init --apiserver-advertise-address=0.0.0.0 --pod-network-cidr=172.17.0.0/16
+[init] Using Kubernetes version: v1.10.5
+[init] Using Authorization modes: [Node RBAC]
+[preflight] Running pre-flight checks.
+[preflight] Starting the kubelet service
+[certificates] Generated ca certificate and key.
+[certificates] Generated apiserver certificate and key.
+[certificates] apiserver serving cert is signed for DNS names [px-chrisp kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local] and IPs [10.96.0.1 169.46.4.47]
+[certificates] Generated apiserver-kubelet-client certificate and key.
+[certificates] Generated sa key and public key.
+[certificates] Generated front-proxy-ca certificate and key.
+[certificates] Generated front-proxy-client certificate and key.
+[certificates] Generated etcd/ca certificate and key.
+[certificates] Generated etcd/server certificate and key.
+[certificates] etcd/server serving cert is signed for DNS names [localhost] and IPs [127.0.0.1]
+[certificates] Generated etcd/peer certificate and key.
+[certificates] etcd/peer serving cert is signed for DNS names [px-chrisp] and IPs [169.46.4.47]
+[certificates] Generated etcd/healthcheck-client certificate and key.
+[certificates] Generated apiserver-etcd-client certificate and key.
+[certificates] Valid certificates and keys now exist in "/etc/kubernetes/pki"
+[kubeconfig] Wrote KubeConfig file to disk: "/etc/kubernetes/admin.conf"
+[kubeconfig] Wrote KubeConfig file to disk: "/etc/kubernetes/kubelet.conf"
+[kubeconfig] Wrote KubeConfig file to disk: "/etc/kubernetes/controller-manager.conf"
+[kubeconfig] Wrote KubeConfig file to disk: "/etc/kubernetes/scheduler.conf"
+[controlplane] Wrote Static Pod manifest for component kube-apiserver to "/etc/kubernetes/manifests/kube-apiserver.yaml"
+[controlplane] Wrote Static Pod manifest for component kube-controller-manager to "/etc/kubernetes/manifests/kube-controller-manager.yaml"
+[controlplane] Wrote Static Pod manifest for component kube-scheduler to "/etc/kubernetes/manifests/kube-scheduler.yaml"
+[etcd] Wrote Static Pod manifest for a local etcd instance to "/etc/kubernetes/manifests/etcd.yaml"
+[init] Waiting for the kubelet to boot up the control plane as Static Pods from directory "/etc/kubernetes/manifests".
+[init] This might take a minute or longer if the control plane images have to be pulled.
+Loaded image: apiconnect/analytics-mq-kafka:2018-06-25-21-55-05-5a40eb7c682b8f9c503ab4c49c00ca10c7a34d4b
+Loaded image: apiconnect/analytics-mq-zookeeper:2018-06-25-21-55-05-5a40eb7c682b8f9c503ab4c49c00ca10c7a34d4b
+Loaded image: apiconnect/analytics-storage:2018-07-03-12-29-21-23353ed077d02db3bdfd5a355a9abaea432e34a8
+Loaded image: apiconnect/analytics-cronjobs:2018-06-25-21-53-38-32c0717d88ef569e2945fd161b1f7992c53552fd
+Loaded image: apiconnect/openresty:alpine
+Loaded image: apiconnect/analytics-client:2018-07-03-14-10-38-98ba22535e23a2ec138a2c8fe48ea672d9631d1e
+Loaded image: apiconnect/analytics-ingestion:2018-07-03-12-33-09-5e39c9228817ea3ab386a5f909d3d022f334464c
+Image load complete
+Tagging images for new registry
+Pushing images to new registry
+The push refers to repository [localhost:5000/apiconnect/openresty]
+[apiclient] All control plane components are healthy after 27.001306 seconds
+[uploadconfig] Storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
+[markmaster] Will mark node px-chrisp as master by adding a label and a taint
+[markmaster] Master px-chrisp tainted and labelled with key/value: node-role.kubernetes.io/master=""
+[bootstraptoken] Using token: pxfwrg.bzgniabjapjjmizl
+[bootstraptoken] Configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get long term certificate credentials
+[bootstraptoken] Configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a Node Bootstrap Token
+[bootstraptoken] Configured RBAC rules to allow certificate rotation for all node client certificates in the cluster
+[bootstraptoken] Creating the "cluster-info" ConfigMap in the "kube-public" namespace
+[addons] Applied essential addon: kube-dns
+[addons] Applied essential addon: kube-proxy
+
+Your Kubernetes master has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+You can now join any number of machines by running the following on each node
+as root:
+
+  kubeadm join 169.46.4.47:6443 --token pxfwrg.bzgniabjapjjmizl --discovery-token-ca-cert-hash sha256:40bb7291b2c41fae16cf12858e65d46b5f2a74e493b31b1ed587665bbfb72dc7
+
+mkdir -p /home/chrisp/.kube
+sudo cp -f /etc/kubernetes/admin.conf /home/chrisp/.kube/config
+sudo chown  chrisp /home/chrisp/.kube/config
+kubectl apply -f yaml/calico.yaml
+configmap "calico-config" created
+daemonset.extensions "calico-etcd" created
+service "calico-etcd" created
+daemonset.extensions "calico-node" created
+deployment.extensions "calico-kube-controllers" created
+clusterrolebinding.rbac.authorization.k8s.io "calico-cni-plugin" created
+clusterrole.rbac.authorization.k8s.io "calico-cni-plugin" created
+serviceaccount "calico-cni-plugin" created
+clusterrolebinding.rbac.authorization.k8s.io "calico-kube-controllers" created
+clusterrole.rbac.authorization.k8s.io "calico-kube-controllers" created
+serviceaccount "calico-kube-controllers" created
+kubectl taint nodes --all node-role.kubernetes.io/master-
+node "px-chrisp" untainted
+#kubectl apply -f yaml/registry.yml && sleep 100 &
+helm init
+Creating /home/chrisp/.helm 
+Creating /home/chrisp/.helm/repository 
+Creating /home/chrisp/.helm/repository/cache 
+Creating /home/chrisp/.helm/repository/local 
+Creating /home/chrisp/.helm/plugins 
+Creating /home/chrisp/.helm/starters 
+Creating /home/chrisp/.helm/cache/archive 
+Creating /home/chrisp/.helm/repository/repositories.yaml 
+Adding stable repo with URL: https://kubernetes-charts.storage.googleapis.com 
+Adding local repo with URL: http://127.0.0.1:8879/charts 
+$HELM_HOME has been configured at /home/chrisp/.helm.
+
+Tiller (the Helm server-side component) has been installed into your Kubernetes Cluster.
+
+Please note: by default, Tiller is deployed with an insecure 'allow unauthenticated users' policy.
+For more information on securing your installation see: https://docs.helm.sh/using_helm/#securing-your-helm-installation
+Happy Helming!
+echo "Waiting for tiller to start in cluster"
+Waiting for tiller to start in cluster
+sleep 60
+kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
+clusterrolebinding.rbac.authorization.k8s.io "add-on-cluster-admin" created
+kubectl create -f yaml/storage-rbac.yaml
+clusterrole.rbac.authorization.k8s.io "hostpath-provisioner" created
+clusterrolebinding.rbac.authorization.k8s.io "hostpath-provisioner" created
+kubectl create -f yaml/hostpath-provisioner.yaml
+deployment.extensions "hostpath-provisioner" created
+kubectl create -f yaml/StorageClass.yaml
+storageclass.storage.k8s.io "velox-block" created
+helm repo add incubator http://storage.googleapis.com/kubernetes-charts-incubator
+"incubator" has been added to your repositories
+helm install --name registry stable/docker-registry
+NAME:   registry
+LAST DEPLOYED: Wed Jul 11 11:48:58 2018
+NAMESPACE: default
+STATUS: DEPLOYED
+
+RESOURCES:
+==> v1/Secret
+NAME                             TYPE    DATA  AGE
+registry-docker-registry-secret  Opaque  1     0s
+
+==> v1/ConfigMap
+NAME                             DATA  AGE
+registry-docker-registry-config  1     0s
+
+==> v1/Service
+NAME                      TYPE       CLUSTER-IP      EXTERNAL-IP  PORT(S)   AGE
+registry-docker-registry  ClusterIP  10.103.133.231  <none>       5000/TCP  0s
+
+==> v1beta1/Deployment
+NAME                      DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
+registry-docker-registry  1        1        1           0          0s
+
+==> v1/Pod(related)
+NAME                                       READY  STATUS             RESTARTS  AGE
+registry-docker-registry-66945c4df6-mr82p  0/1    ContainerCreating  0         0s
+
+
+NOTES:
+1. Get the application URL by running these commands:
+  export POD_NAME=$(kubectl get pods --namespace default -l "app=docker-registry,release=registry" -o jsonpath="{.items[0].metadata.name}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl port-forward $POD_NAME 8080:5000
+
+sleep 30s
+sh bin/setupPfRegistry.sh
+helm install --name ingress -f yaml/nginx-ingress-values.yml stable/nginx-ingress
+Forwarding from 127.0.0.1:5000 -> 5000
+Forwarding from [::1]:5000 -> 5000
+NAME:   ingress
+LAST DEPLOYED: Wed Jul 11 11:49:29 2018
+NAMESPACE: default
+STATUS: DEPLOYED
+
+RESOURCES:
+==> v1beta1/Deployment
+NAME                                   DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
+ingress-nginx-ingress-default-backend  1        1        1           0          0s
+
+==> v1/Pod(related)
+NAME                                                    READY  STATUS             RESTARTS  AGE
+ingress-nginx-ingress-controller-cvr8s                  0/1    ContainerCreating  0         0s
+ingress-nginx-ingress-default-backend-6f58fb5f56-wn2gz  0/1    ContainerCreating  0         0s
+
+==> v1/ConfigMap
+NAME                              DATA  AGE
+ingress-nginx-ingress-controller  17    0s
+
+==> v1beta1/ClusterRoleBinding
+NAME                   AGE
+ingress-nginx-ingress  0s
+
+==> v1beta1/Role
+NAME                   AGE
+ingress-nginx-ingress  0s
+
+==> v1beta1/RoleBinding
+NAME                   AGE
+ingress-nginx-ingress  0s
+
+==> v1beta1/PodDisruptionBudget
+NAME                                   MIN AVAILABLE  MAX UNAVAILABLE  ALLOWED DISRUPTIONS  AGE
+ingress-nginx-ingress-controller       1              N/A              0                    0s
+ingress-nginx-ingress-default-backend  1              N/A              0                    0s
+
+==> v1/ServiceAccount
+NAME                   SECRETS  AGE
+ingress-nginx-ingress  1        0s
+
+==> v1beta1/ClusterRole
+NAME                   AGE
+ingress-nginx-ingress  0s
+
+==> v1/Service
+NAME                                   TYPE          CLUSTER-IP     EXTERNAL-IP  PORT(S)                     AGE
+ingress-nginx-ingress-controller       LoadBalancer  10.98.128.88   <pending>    80:30346/TCP,443:31821/TCP  0s
+ingress-nginx-ingress-default-backend  ClusterIP     10.104.63.111  <none>       80/TCP                      0s
+
+==> v1beta1/DaemonSet
+NAME                              DESIRED  CURRENT  READY  UP-TO-DATE  AVAILABLE  NODE SELECTOR  AGE
+ingress-nginx-ingress-controller  1        1        0      1           0          <none>         0s
+
+
+NOTES:
+The nginx-ingress controller has been installed.
+It may take a few minutes for the LoadBalancer IP to be available.
+You can watch the status by running 'kubectl --namespace default get services -o wide -w ingress-nginx-ingress-controller'
+
+An example Ingress that makes use of the controller:
+
+  apiVersion: extensions/v1beta1
+  kind: Ingress
+  metadata:
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    name: example
+    namespace: foo
+  spec:
+    rules:
+      - host: www.example.com
+        http:
+          paths:
+            - backend:
+                serviceName: exampleService
+                servicePort: 80
+              path: /
+    # This section is only required if TLS is to be enabled for the Ingress
+    tls:
+        - hosts:
+            - www.example.com
+          secretName: example-tls
+
+If TLS is enabled for the Ingress, a Secret containing the certificate and key must also be provided:
+
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: example-tls
+    namespace: foo
+  data:
+    tls.crt: <base64 encoded cert>
+    tls.key: <base64 encoded key>
+  type: kubernetes.io/tls
+
+wait
+sudo docker pull ibmcom/datapower
+Using default tag: latest
+latest: Pulling from ibmcom/datapower
+Digest: sha256:3b43cb52969ed6aabb3c5a307b485739a21a77c8f9887e53aae7b1b2ecce72d6
+Status: Image is up to date for ibmcom/datapower:latest
+sudo docker tag ibmcom/datapower:latest localhost:5000/apiconnect/datapower-api-gateway:7.7.1.1-300826-release
+sudo docker push localhost:5000/apiconnect/datapower-api-gateway:7.7.1.1-300826-release
+Handling connection for 5000
+The push refers to repository [localhost:5000/apiconnect/datapower-api-gateway]
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+dc37e8de11eb: Preparing
+e433b3b2b9fb: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+dc37e8de11eb: Pushed
+Handling connection for 5000
+Handling connection for 5000
+e433b3b2b9fb: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+7.7.1.1-300826-release: digest: sha256:3b43cb52969ed6aabb3c5a307b485739a21a77c8f9887e53aae7b1b2ecce72d6 size: 740
+make -C fixcentral/ install upload ver=3.1
+make[1]: Entering directory '/home/chrisp/apicSetup/fixcentral'
+sudo cp 3.1/apicup-* `which apicup`
+sudo cp 3.1/apic-* `which apic`
+rm -rf versionToInstall || true
+ln -sf 3.1 versionToInstall
+sudo chmod 755 `which apic` 
+sudo apicup registry-upload management 3.1/management-images* localhost:5000 --debug
+Loading images into local docker (will take a while)
+Loaded image: apiconnect/cassandra:2018-06-21-18-37-43-726fbf40f64ecbf3d6d45372c06ad9ea425dab55
+Loaded image: apiconnect/apim:2018.3-23-138cf4e
+Loaded image: apiconnect/cassandra-health-check:2018-03-20-00-46-39-master-0-gbb58e73
+Loaded image: apiconnect/juhu:2018-06-21-18-37-09-2018.3-0-ga44bda5
+Loaded image: apiconnect/busybox:latest
+Loaded image: apiconnect/ldap:2018.3-4-5480403
+Loaded image: apiconnect/lur:2018.3-16-4f33cb6
+Loaded image: apiconnect/cassandra-operator:2018-06-21-18-37-43-726fbf40f64ecbf3d6d45372c06ad9ea425dab55
+Loaded image: apiconnect/client-downloads-server:2018-07-05-19-12-57-2018.3-0-g81460fe
+Loaded image: apiconnect/migration:latest
+Loaded image: apiconnect/ui:2018-07-05-18-46-42-061ff1c4d880ebfdb07597e1c8442a9633d2e9fd
+Loaded image: apiconnect/analytics-proxy:2018-06-21-18-40-34-2018.3-0-gb21ef52
+Image load complete
+Tagging images for new registry
+Pushing images to new registry
+The push refers to repository [localhost:5000/apiconnect/apim]
+Handling connection for 5000
+Handling connection for 5000
+cdbd9ff5fd6d: Preparing
+ee961a44defb: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+ee961a44defb: Pushed
+Handling connection for 5000
+Handling connection for 5000
+cdbd9ff5fd6d: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018.3-23-138cf4e: digest: sha256:582a265c064fb9e410bc310aa574ce42baf456e4ff4f090504870dcbaf5d27ba size: 741
+The push refers to repository [localhost:5000/apiconnect/cassandra-health-check]
+Handling connection for 5000
+Handling connection for 5000
+3ab1d9b51404: Preparing
+1ca3b95c9930: Preparing
+9dfa40a0da3b: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+1ca3b95c9930: Pushed
+Handling connection for 5000
+Handling connection for 5000
+9dfa40a0da3b: Pushed
+Handling connection for 5000
+Handling connection for 5000
+3ab1d9b51404: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018-03-20-00-46-39-master-0-gbb58e73: digest: sha256:c68d59204f33f75e61fba680db8f793d481f647f29f91191c9bac28f1f6bdd4c size: 946
+The push refers to repository [localhost:5000/apiconnect/client-downloads-server]
+Handling connection for 5000
+Handling connection for 5000
+7ccb29cb7393: Preparing
+5c587718a9ee: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+5c587718a9ee: Pushed
+Handling connection for 5000
+Handling connection for 5000
+7ccb29cb7393: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018-07-05-19-12-57-2018.3-0-g81460fe: digest: sha256:05f6899c0f3cc51e1863b11cdaa414e9218f28a4d5edef9efe53e6c516af529e size: 741
+Handling connection for 5000
+The push refers to repository [localhost:5000/apiconnect/juhu]
+Handling connection for 5000
+5bf8e2a41371: Preparing
+27c716e27322: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+5bf8e2a41371: Pushed
+Handling connection for 5000
+Handling connection for 5000
+27c716e27322: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018-06-21-18-37-09-2018.3-0-ga44bda5: digest: sha256:91e0b138407861772439ffd07458265f2e9f5bce819dd0f55358317ed5769fa8 size: 737
+The push refers to repository [localhost:5000/apiconnect/busybox]
+Handling connection for 5000
+Handling connection for 5000
+432b65032b94: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+432b65032b94: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+latest: digest: sha256:74f634b1bc1bd74535d5209589734efbd44a25f4e2dc96d78784576a3eb5b335 size: 527
+The push refers to repository [localhost:5000/apiconnect/ldap]
+Handling connection for 5000
+Handling connection for 5000
+3440df2ddd66: Preparing
+9f51681a1b50: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+9f51681a1b50: Pushed
+Handling connection for 5000
+Handling connection for 5000
+3440df2ddd66: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018.3-4-5480403: digest: sha256:481553759e5134074c0ce9789d086e8d456beea8653d8c2b62ec85a567243b5c size: 741
+The push refers to repository [localhost:5000/apiconnect/lur]
+Handling connection for 5000
+Handling connection for 5000
+2e26ac001674: Preparing
+202acaf7f0da: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+202acaf7f0da: Pushed
+Handling connection for 5000
+Handling connection for 5000
+2e26ac001674: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018.3-16-4f33cb6: digest: sha256:e3f89ecdd2c2a001a864f694efe4d185930cfff4c5b1edffba2e756693863f7a size: 741
+The push refers to repository [localhost:5000/apiconnect/cassandra-health-check]
+Handling connection for 5000
+Handling connection for 5000
+3ab1d9b51404: Preparing
+1ca3b95c9930: Preparing
+9dfa40a0da3b: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+1ca3b95c9930: Layer already exists
+9dfa40a0da3b: Layer already exists
+3ab1d9b51404: Layer already exists
+Handling connection for 5000
+Handling connection for 5000
+2018-03-20-00-46-39-master-0-gbb58e73: digest: sha256:c68d59204f33f75e61fba680db8f793d481f647f29f91191c9bac28f1f6bdd4c size: 946
+Handling connection for 5000
+The push refers to repository [localhost:5000/apiconnect/migration]
+Handling connection for 5000
+f6f3ee38d3d4: Preparing
+ddae72772a78: Preparing
+5b1cc8dfa38b: Preparing
+1f3beb652a27: Preparing
+f3c5dda438aa: Preparing
+fdfec4638be4: Preparing
+22525e46848c: Preparing
+71a3d8bd0e80: Preparing
+87f9719c8a1d: Preparing
+913edbb0371b: Preparing
+22525e46848c: Waiting
+71a3d8bd0e80: Waiting
+913edbb0371b: Waiting
+fdfec4638be4: Waiting
+87f9719c8a1d: Waiting
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+f6f3ee38d3d4: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+fdfec4638be4: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+22525e46848c: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+71a3d8bd0e80: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+87f9719c8a1d: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+ddae72772a78: Pushed
+Handling connection for 5000
+Handling connection for 5000
+1f3beb652a27: Pushed
+Handling connection for 5000
+Handling connection for 5000
+913edbb0371b: Pushed
+Handling connection for 5000
+Handling connection for 5000
+5b1cc8dfa38b: Pushed
+Handling connection for 5000
+Handling connection for 5000
+f3c5dda438aa: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+latest: digest: sha256:4f8d509f4521201b8be4ef1777dad3e9ce90dca424f394c146c85d4e5363aa79 size: 2412
+The push refers to repository [localhost:5000/apiconnect/ui]
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+c5959b783e7f: Preparing
+fc7cb8efb235: Preparing
+5c32965cd153: Preparing
+4a7452f1aabe: Preparing
+7187ce304e52: Preparing
+ff6a6e3dd22d: Preparing
+cd7100a72410: Preparing
+cd7100a72410: Waiting
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+fc7cb8efb235: Pushed
+4a7452f1aabe: Pushed
+7187ce304e52: Pushed
+5c32965cd153: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+cd7100a72410: Pushed
+Handling connection for 5000
+Handling connection for 5000
+ff6a6e3dd22d: Pushed
+Handling connection for 5000
+Handling connection for 5000
+c5959b783e7f: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018-07-05-18-46-42-061ff1c4d880ebfdb07597e1c8442a9633d2e9fd: digest: sha256:58d03456f602634f32a0116d26f05b64257ad797b6dba2136ebb897a8e69f4a8 size: 1781
+The push refers to repository [localhost:5000/apiconnect/analytics-proxy]
+Handling connection for 5000
+Handling connection for 5000
+ba36fa37b5fb: Preparing
+34382b3a8399: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+ba36fa37b5fb: Pushed
+Handling connection for 5000
+Handling connection for 5000
+34382b3a8399: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018-06-21-18-40-34-2018.3-0-gb21ef52: digest: sha256:57bbc6ff045e3df6abaa337c8a551383ecaddebcba1a79aa952031f1653edd7b size: 737
+The push refers to repository [localhost:5000/apiconnect/cassandra-operator]
+Handling connection for 5000
+Handling connection for 5000
+bf2f2d21af23: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+bf2f2d21af23: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018-06-21-18-37-43-726fbf40f64ecbf3d6d45372c06ad9ea425dab55: digest: sha256:02b9524d18188d3804caf1267ea554120f9f9ac7990a6d46c062c02e36ed343a size: 528
+Handling connection for 5000
+The push refers to repository [localhost:5000/apiconnect/cassandra]
+Handling connection for 5000
+Handling connection for 5000
+c5020730c68e: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+c5020730c68e: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018-06-21-18-37-43-726fbf40f64ecbf3d6d45372c06ad9ea425dab55: digest: sha256:1050893c8d7ac2fc7aac961ad8165b89150c9fc6f231481e9d6f662946775029 size: 530
+sudo apicup registry-upload analytics 3.1/analytics-images* localhost:5000 --debug
+Loading images into local docker (will take a while)
+Loaded image: apiconnect/analytics-mq-kafka:2018-06-25-21-55-05-5a40eb7c682b8f9c503ab4c49c00ca10c7a34d4b
+Loaded image: apiconnect/analytics-mq-zookeeper:2018-06-25-21-55-05-5a40eb7c682b8f9c503ab4c49c00ca10c7a34d4b
+Loaded image: apiconnect/analytics-storage:2018-07-03-12-29-21-23353ed077d02db3bdfd5a355a9abaea432e34a8
+Loaded image: apiconnect/analytics-cronjobs:2018-06-25-21-53-38-32c0717d88ef569e2945fd161b1f7992c53552fd
+Loaded image: apiconnect/openresty:alpine
+Loaded image: apiconnect/analytics-client:2018-07-03-14-10-38-98ba22535e23a2ec138a2c8fe48ea672d9631d1e
+Loaded image: apiconnect/analytics-ingestion:2018-07-03-12-33-09-5e39c9228817ea3ab386a5f909d3d022f334464c
+Image load complete
+Tagging images for new registry
+Pushing images to new registry
+The push refers to repository [localhost:5000/apiconnect/openresty]
+Handling connection for 5000
+Handling connection for 5000
+b2205b09b5e2: Preparing
+2af60302dd60: Preparing
+0961906c2512: Preparing
+cd7100a72410: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+cd7100a72410: Mounted from apiconnect/ui
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2af60302dd60: Pushed
+Handling connection for 5000
+Handling connection for 5000
+b2205b09b5e2: Pushed
+Handling connection for 5000
+Handling connection for 5000
+0961906c2512: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+alpine: digest: sha256:4bb0fa1221666825bdd0cc0699a6783850a68e205950de565976079a940cc7f8 size: 1155
+Handling connection for 5000
+The push refers to repository [localhost:5000/apiconnect/analytics-client]
+Handling connection for 5000
+116acfd58b48: Preparing
+86d25155187d: Preparing
+28145828c872: Preparing
+f82bd2da1cb2: Preparing
+10138e00da1d: Preparing
+d0623d3a28b8: Preparing
+75e0fba42e97: Preparing
+107a1e4e1841: Preparing
+d86538442f1e: Preparing
+483cd4bf5710: Preparing
+1b5d38e7745f: Preparing
+d85d85b7d912: Preparing
+0da7ee1b167b: Preparing
+970b3d4cc20d: Preparing
+d0623d3a28b8: Waiting
+d86538442f1e: Waiting
+75e0fba42e97: Waiting
+483cd4bf5710: Waiting
+107a1e4e1841: Waiting
+1b5d38e7745f: Waiting
+970b3d4cc20d: Waiting
+7a630184c4bb: Preparing
+8321365e5f44: Preparing
+c03836a917fa: Preparing
+93f771036966: Preparing
+7a630184c4bb: Waiting
+8eb6a4af4a15: Preparing
+89db0e420bdb: Preparing
+8321365e5f44: Waiting
+62008f405194: Preparing
+c03836a917fa: Waiting
+89db0e420bdb: Waiting
+8eb6a4af4a15: Waiting
+93f771036966: Waiting
+8d25efac8abc: Preparing
+4a6a28f7664f: Preparing
+ba5a5988131f: Preparing
+62008f405194: Waiting
+Handling connection for 5000
+e15afa4858b6: Preparing
+e15afa4858b6: Waiting
+ba5a5988131f: Waiting
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+f82bd2da1cb2: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+10138e00da1d: Pushed
+Handling connection for 5000
+28145828c872: Pushed
+86d25155187d: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+75e0fba42e97: Pushed
+Handling connection for 5000
+Handling connection for 5000
+d0623d3a28b8: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+107a1e4e1841: Pushed
+d86538442f1e: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+1b5d38e7745f: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+483cd4bf5710: Pushed
+Handling connection for 5000
+Handling connection for 5000
+116acfd58b48: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+7a630184c4bb: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+8321365e5f44: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+93f771036966: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+8eb6a4af4a15: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+89db0e420bdb: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+62008f405194: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+0da7ee1b167b: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+4a6a28f7664f: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+d85d85b7d912: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+970b3d4cc20d: Pushed
+Handling connection for 5000
+Handling connection for 5000
+ba5a5988131f: Pushed
+Handling connection for 5000
+Handling connection for 5000
+c03836a917fa: Pushed
+Handling connection for 5000
+Handling connection for 5000
+e15afa4858b6: Pushed
+Handling connection for 5000
+Handling connection for 5000
+8d25efac8abc: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018-07-03-14-10-38-98ba22535e23a2ec138a2c8fe48ea672d9631d1e: digest: sha256:b87dc751bbd75591e5590b8bb5f5de5cc4198b610719f54ceb4acf52ce02a478 size: 5549
+The push refers to repository [localhost:5000/apiconnect/analytics-ingestion]
+Handling connection for 5000
+Handling connection for 5000
+1747907a6be7: Preparing
+cfb3f6efe4da: Preparing
+b43c9aa8e658: Preparing
+541f55584ac8: Preparing
+e26437028422: Preparing
+4e6791b3b32b: Preparing
+8922a795c262: Preparing
+bfd4439723e0: Preparing
+9b3dab1e840e: Preparing
+Handling connection for 5000
+Handling connection for 5000
+11c3ebaf2a79: Preparing
+dec418575a85: Preparing
+19ad66e1c565: Preparing
+6f1a7fbf1cd5: Preparing
+18576519d318: Preparing
+Handling connection for 5000
+3cb311abb727: Preparing
+Handling connection for 5000
+914d77dee293: Preparing
+b3d4b850cd65: Preparing
+9656dad34049: Preparing
+df08d120454e: Preparing
+91accdb443c2: Preparing
+3867f0427a47: Preparing
+9ecc5e73fbcf: Preparing
+64531fd29d38: Preparing
+4e6791b3b32b: Waiting
+ac564ab2dd94: Preparing
+dec418575a85: Waiting
+855d3daffea2: Preparing
+855d3daffea2: Preparing
+8922a795c262: Waiting
+22f235f044b0: Preparing
+19ad66e1c565: Waiting
+a5bcbea8b441: Preparing
+11c3ebaf2a79: Waiting
+bfd4439723e0: Waiting
+3cb311abb727: Waiting
+18576519d318: Waiting
+9b3dab1e840e: Waiting
+914d77dee293: Waiting
+df08d120454e: Waiting
+64531fd29d38: Waiting
+9ecc5e73fbcf: Waiting
+b3d4b850cd65: Waiting
+91accdb443c2: Waiting
+3867f0427a47: Waiting
+ac564ab2dd94: Waiting
+855d3daffea2: Waiting
+134ea3eb8c22: Preparing
+6efe535c4c10: Preparing
+f60e202e5fd7: Preparing
+55ebe328353f: Preparing
+96067fb65a00: Preparing
+0bc123bf07bf: Preparing
+f60e202e5fd7: Waiting
+6efe535c4c10: Waiting
+134ea3eb8c22: Waiting
+96067fb65a00: Waiting
+bcc97fbfc9e1: Preparing
+bcc97fbfc9e1: Waiting
+0bc123bf07bf: Waiting
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+b43c9aa8e658: Pushed
+Handling connection for 5000
+Handling connection for 5000
+e26437028422: Pushed
+Handling connection for 5000
+541f55584ac8: Pushed
+Handling connection for 5000
+Handling connection for 5000
+1747907a6be7: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+cfb3f6efe4da: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+4e6791b3b32b: Pushed
+Handling connection for 5000
+Handling connection for 5000
+9b3dab1e840e: Pushed
+Handling connection for 5000
+bfd4439723e0: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+8922a795c262: Pushed
+Handling connection for 5000
+11c3ebaf2a79: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+19ad66e1c565: Pushed
+dec418575a85: Pushed
+Handling connection for 5000
+18576519d318: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+b3d4b850cd65: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+df08d120454e: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+3cb311abb727: Pushed
+91accdb443c2: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+914d77dee293: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+3867f0427a47: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+ac564ab2dd94: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+855d3daffea2: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+22f235f044b0: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+a5bcbea8b441: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+134ea3eb8c22: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+6efe535c4c10: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+f60e202e5fd7: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+9ecc5e73fbcf: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+96067fb65a00: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+6f1a7fbf1cd5: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+0bc123bf07bf: Pushed
+Handling connection for 5000
+Handling connection for 5000
+64531fd29d38: Pushed
+Handling connection for 5000
+Handling connection for 5000
+9656dad34049: Pushed
+Handling connection for 5000
+Handling connection for 5000
+55ebe328353f: Pushed
+Handling connection for 5000
+Handling connection for 5000
+bcc97fbfc9e1: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018-07-03-12-33-09-5e39c9228817ea3ab386a5f909d3d022f334464c: digest: sha256:a6d245df2aed2a776d9ea598d2d1e2e9d2e40826221ab67d84092612e9947b46 size: 7625
+The push refers to repository [localhost:5000/apiconnect/analytics-mq-kafka]
+Handling connection for 5000
+Handling connection for 5000
+97f8769b0f56: Preparing
+cf0c6664b4ee: Preparing
+304b7964dac9: Preparing
+Handling connection for 5000
+Handling connection for 5000
+2b1db31f2a80: Preparing
+16260de3f04e: Preparing
+09d3a3c98c1f: Preparing
+defe1f558262: Preparing
+8fad67424c4e: Preparing
+Handling connection for 5000
+09d3a3c98c1f: Waiting
+defe1f558262: Waiting
+8fad67424c4e: Waiting
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+97f8769b0f56: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+304b7964dac9: Pushed
+Handling connection for 5000
+Handling connection for 5000
+cf0c6664b4ee: Pushed
+Handling connection for 5000
+Handling connection for 5000
+2b1db31f2a80: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+09d3a3c98c1f: Pushed
+Handling connection for 5000
+Handling connection for 5000
+16260de3f04e: Pushed
+Handling connection for 5000
+Handling connection for 5000
+8fad67424c4e: Pushed
+Handling connection for 5000
+Handling connection for 5000
+defe1f558262: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018-06-25-21-55-05-5a40eb7c682b8f9c503ab4c49c00ca10c7a34d4b: digest: sha256:739186c619284f0302e585dffd670989b3f702de2719e5aecce630ba31534a4a size: 1997
+Handling connection for 5000
+The push refers to repository [localhost:5000/apiconnect/analytics-mq-zookeeper]
+Handling connection for 5000
+6249c0a62bf2: Preparing
+716591e513de: Preparing
+26bb5b7ecadb: Preparing
+49907af65b0a: Preparing
+4589f96366e6: Preparing
+b97229212d30: Preparing
+cd181336f142: Preparing
+0f5ff0cf6a1c: Preparing
+cd181336f142: Waiting
+b97229212d30: Waiting
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+716591e513de: Pushed
+Handling connection for 5000
+4589f96366e6: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+49907af65b0a: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+b97229212d30: Pushed
+Handling connection for 5000
+cd181336f142: Pushed
+Handling connection for 5000
+Handling connection for 5000
+6249c0a62bf2: Pushed
+Handling connection for 5000
+Handling connection for 5000
+0f5ff0cf6a1c: Pushed
+Handling connection for 5000
+Handling connection for 5000
+26bb5b7ecadb: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018-06-25-21-55-05-5a40eb7c682b8f9c503ab4c49c00ca10c7a34d4b: digest: sha256:65ce98217992b0c81f3ff61eac2bf89754d2e1d7c5f96f79c0195fc1e158ac3d size: 1988
+The push refers to repository [localhost:5000/apiconnect/analytics-storage]
+Handling connection for 5000
+Handling connection for 5000
+5b7c1a7e8903: Preparing
+aa9d6017325d: Preparing
+5ac4a9092f42: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+fedc434171cb: Preparing
+cd217b92f94c: Preparing
+2df74076065d: Preparing
+611d9996d585: Preparing
+a2662e952a5d: Preparing
+1ea1a9dbf03d: Preparing
+fb3b828c6c7a: Preparing
+9532750bdaa2: Preparing
+2f9d459d1f49: Preparing
+9febffce392a: Preparing
+5e8e5492d586: Preparing
+83dcf1287b0d: Preparing
+f9e4f50bcd64: Preparing
+2b828d7602a3: Preparing
+45943c3a5288: Preparing
+2df74076065d: Waiting
+611d9996d585: Waiting
+a2662e952a5d: Waiting
+9febffce392a: Waiting
+5e8e5492d586: Waiting
+83dcf1287b0d: Waiting
+1ea1a9dbf03d: Waiting
+f9e4f50bcd64: Waiting
+2f9d459d1f49: Waiting
+fb3b828c6c7a: Waiting
+9532750bdaa2: Waiting
+2b828d7602a3: Waiting
+84cee11a72ad: Preparing
+fdbf347c669a: Preparing
+45943c3a5288: Waiting
+8749226a08c9: Preparing
+87ca6d347f53: Preparing
+03981802db2b: Preparing
+b5e934a17e38: Preparing
+1459bdcd7344: Preparing
+a223d6d57aba: Preparing
+87ca6d347f53: Waiting
+a056f6f4ce6d: Preparing
+8749226a08c9: Waiting
+06d54b92a563: Preparing
+05328c23f74a: Preparing
+1459bdcd7344: Waiting
+64b3e4ff9b3e: Preparing
+b5e934a17e38: Waiting
+6b021239b95e: Preparing
+f6814a40e7bc: Preparing
+a223d6d57aba: Waiting
+a056f6f4ce6d: Waiting
+e15afa4858b6: Preparing
+06d54b92a563: Waiting
+05328c23f74a: Waiting
+64b3e4ff9b3e: Waiting
+f6814a40e7bc: Waiting
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+5ac4a9092f42: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+cd217b92f94c: Pushed
+Handling connection for 5000
+Handling connection for 5000
+fedc434171cb: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2df74076065d: Pushed
+a2662e952a5d: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+611d9996d585: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+fb3b828c6c7a: Pushed
+1ea1a9dbf03d: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+9532750bdaa2: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2f9d459d1f49: Pushed
+5e8e5492d586: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+9febffce392a: Pushed
+Handling connection for 5000
+Handling connection for 5000
+aa9d6017325d: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+5b7c1a7e8903: Handling connection for 5000
+Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+83dcf1287b0d: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2b828d7602a3: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+45943c3a5288: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+fdbf347c669a: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+87ca6d347f53: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+03981802db2b: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+b5e934a17e38: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+1459bdcd7344: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+a223d6d57aba: Pushed
+Handling connection for 5000
+Handling connection for 5000
+a056f6f4ce6d: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+05328c23f74a: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+64b3e4ff9b3e: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+84cee11a72ad: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+6b021239b95e: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+e15afa4858b6: Mounted from apiconnect/analytics-client
+Handling connection for 5000
+Handling connection for 5000
+06d54b92a563: Pushed
+Handling connection for 5000
+Handling connection for 5000
+8749226a08c9: Pushed
+Handling connection for 5000
+Handling connection for 5000
+f9e4f50bcd64: Pushed
+Handling connection for 5000
+Handling connection for 5000
+f6814a40e7bc: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018-07-03-12-29-21-23353ed077d02db3bdfd5a355a9abaea432e34a8: digest: sha256:eaae7c06c62339fc58f6caddce62fbd785059467b97d9ba3e01dd543fb6c2d50 size: 7203
+Handling connection for 5000
+The push refers to repository [localhost:5000/apiconnect/analytics-cronjobs]
+Handling connection for 5000
+7df7198929a3: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+255673855bfd: Preparing
+5304a72a764d: Preparing
+9d73c3003f03: Preparing
+53e443748100: Preparing
+daa0faa60717: Preparing
+c984d8440e16: Preparing
+c822dca79c37: Preparing
+01b4a0e7944c: Preparing
+af4acc64a1a3: Preparing
+337aca14f37c: Preparing
+a6cd79872733: Preparing
+cb2c0d9526de: Preparing
+d4645adb7f6f: Preparing
+9dfa40a0da3b: Preparing
+337aca14f37c: Waiting
+01b4a0e7944c: Waiting
+a6cd79872733: Waiting
+af4acc64a1a3: Waiting
+c984d8440e16: Waiting
+cb2c0d9526de: Waiting
+d4645adb7f6f: Waiting
+daa0faa60717: Waiting
+9dfa40a0da3b: Waiting
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+53e443748100: Pushed
+Handling connection for 5000
+9d73c3003f03: Pushed
+Handling connection for 5000
+Handling connection for 5000
+255673855bfd: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+5304a72a764d: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+daa0faa60717: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+c822dca79c37: Pushed
+Handling connection for 5000
+Handling connection for 5000
+c984d8440e16: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+af4acc64a1a3: Pushed
+337aca14f37c: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+cb2c0d9526de: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+9dfa40a0da3b: Mounted from apiconnect/cassandra-health-check
+Handling connection for 5000
+Handling connection for 5000
+7df7198929a3: Pushed
+Handling connection for 5000
+Handling connection for 5000
+01b4a0e7944c: Pushed
+Handling connection for 5000
+Handling connection for 5000
+a6cd79872733: Pushed
+Handling connection for 5000
+Handling connection for 5000
+d4645adb7f6f: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018-06-25-21-53-38-32c0717d88ef569e2945fd161b1f7992c53552fd: digest: sha256:8d89ee7b29e1e56b0ecaf99ca79f897e4fc40e7a909901ae7c1f472cb06391ae size: 3449
+sudo apicup registry-upload portal 3.1/portal-images* localhost:5000 --debug
+Loading images into local docker (will take a while)
+Loaded image: apiconnect/portal-db:2018.3-70b5bb15ac0536d123e8e26639712064cd8b9945-18
+Loaded image: apiconnect/portal-dbproxy:2018.3-70b5bb15ac0536d123e8e26639712064cd8b9945-18
+Loaded image: apiconnect/portal-admin:2018.3-6549d23c4c2569887b1c106c1dffccb427444722-61
+Loaded image: apiconnect/portal-web:2018.3-6549d23c4c2569887b1c106c1dffccb427444722-61
+Loaded image: apiconnect/openresty:alpine
+Image load complete
+Tagging images for new registry
+Pushing images to new registry
+The push refers to repository [localhost:5000/apiconnect/portal-db]
+Handling connection for 5000
+Handling connection for 5000
+730ce54615f1: Preparing
+bca018211e4e: Preparing
+ca55bb12e0c4: Preparing
+8213d6b8783a: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+730ce54615f1: Pushed
+bca018211e4e: Pushed
+Handling connection for 5000
+Handling connection for 5000
+ca55bb12e0c4: Pushed
+Handling connection for 5000
+Handling connection for 5000
+8213d6b8783a: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018.3-70b5bb15ac0536d123e8e26639712064cd8b9945-18: digest: sha256:cc10e8048533f998db0aba180458e525110f69f02174f1f6f586eb00ced27c9c size: 1157
+The push refers to repository [localhost:5000/apiconnect/portal-dbproxy]
+Handling connection for 5000
+Handling connection for 5000
+d391289a9edf: Preparing
+481910840bf5: Preparing
+040651c6bd2c: Preparing
+7f7dbbe215a0: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+d391289a9edf: Pushed
+Handling connection for 5000
+Handling connection for 5000
+040651c6bd2c: Pushed
+Handling connection for 5000
+481910840bf5: Pushed
+Handling connection for 5000
+Handling connection for 5000
+7f7dbbe215a0: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018.3-70b5bb15ac0536d123e8e26639712064cd8b9945-18: digest: sha256:342448a01f96b7b977aa6916b921f49f2e433b4a69c2aa595cec431cf19f5abb size: 1151
+The push refers to repository [localhost:5000/apiconnect/portal-admin]
+Handling connection for 5000
+Handling connection for 5000
+3100c2b62a36: Preparing
+d691e84d1100: Preparing
+5ea43bbaca16: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+3100c2b62a36: Pushed
+Handling connection for 5000
+Handling connection for 5000
+d691e84d1100: Pushed
+Handling connection for 5000
+Handling connection for 5000
+5ea43bbaca16: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018.3-6549d23c4c2569887b1c106c1dffccb427444722-61: digest: sha256:6d9522b7377866aecdfcdeeadafaee6b4800a141e4b31ff963b212ed41fbdfb6 size: 949
+The push refers to repository [localhost:5000/apiconnect/portal-web]
+Handling connection for 5000
+Handling connection for 5000
+9808dd9bb156: Preparing
+d3dc2e687054: Preparing
+d73b1e9bb1b4: Preparing
+679ccdc7af1d: Preparing
+5bde7e21a16c: Preparing
+2093eebc528e: Preparing
+2093eebc528e: Waiting
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+5bde7e21a16c: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+d3dc2e687054: Pushed
+9808dd9bb156: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+679ccdc7af1d: Pushed
+Handling connection for 5000
+Handling connection for 5000
+d73b1e9bb1b4: Pushed
+Handling connection for 5000
+Handling connection for 5000
+2093eebc528e: Pushed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2018.3-6549d23c4c2569887b1c106c1dffccb427444722-61: digest: sha256:676b391277bbd9b0523d4461c33826047ce96aea63f88f29e20614abd43a2ecb size: 1571
+The push refers to repository [localhost:5000/apiconnect/openresty]
+Handling connection for 5000
+Handling connection for 5000
+b2205b09b5e2: Preparing
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+2af60302dd60: Preparing
+Handling connection for 5000
+0961906c2512: Preparing
+cd7100a72410: Preparing
+0961906c2512: Layer already exists
+cd7100a72410: Layer already exists
+2af60302dd60: Layer already exists
+b2205b09b5e2: Layer already exists
+Handling connection for 5000
+Handling connection for 5000
+alpine: digest: sha256:4bb0fa1221666825bdd0cc0699a6783850a68e205950de565976079a940cc7f8 size: 1155
+make[1]: Leaving directory '/home/chrisp/apicSetup/fixcentral'
+rm -rf myinstall || true
+apicup init myinstall
+Creating project in myinstall directory
+cd ./myinstall ; apicup subsys create mgmt management --k8s ;
+cd ./myinstall ; apicup endpoints set mgmt platform-api   api.px-chrisp.apicww.cloud ;
+cd ./myinstall ; apicup endpoints set mgmt api-manager-ui apim.px-chrisp.apicww.cloud  ;
+cd ./myinstall ; apicup endpoints set mgmt cloud-admin-ui cm.px-chrisp.apicww.cloud  ;
+cd ./myinstall ; apicup endpoints set mgmt consumer-api consumer.px-chrisp.apicww.cloud ;
+cd ./myinstall ; apicup subsys set mgmt registry-secret apiconnect-image-pull-secret ;
+cd ./myinstall ; apicup subsys set mgmt storage-class velox-block ;
+cd ./myinstall ; apicup subsys set mgmt namespace "default" ;
+cd ./myinstall ; apicup subsys set mgmt cassandra-cluster-size 1 ;
+cd ./myinstall ; apicup subsys set mgmt cassandra-max-memory-gb 2 ;
+cd ./myinstall ; apicup subsys set mgmt cassandra-volume-size-gb 50 ;
+cd ./myinstall ; apicup subsys set mgmt create-crd "true" ;
+cd ./myinstall ; apicup subsys set mgmt enable-persistence "true" ;
+cd ./myinstall ; apicup subsys create gw gateway --k8s ;
+cd ./myinstall ; apicup endpoints set gw api-gateway gw.px-chrisp.apicww.cloud
+cd ./myinstall ; apicup endpoints set gw apic-gw-service gwd.px-chrisp.apicww.cloud  
+cd ./myinstall ; apicup subsys set gw namespace "default" ;
+cd ./myinstall ; apicup subsys set gw max-cpu 2 ;
+cd ./myinstall ; apicup subsys set gw max-memory-gb 4 ;
+cd ./myinstall ; apicup subsys set gw replica-count 3 ;
+cd ./myinstall ; apicup subsys create analytics analytics --k8s ;
+cd ./myinstall ; apicup subsys set analytics namespace "default" ;
+cd ./myinstall ; apicup subsys set analytics coordinating-max-memory-gb 6 ;
+cd ./myinstall ; apicup subsys set analytics data-max-memory-gb 2 ;
+cd ./myinstall ; apicup subsys set analytics data-storage-size-gb 10 ;
+cd ./myinstall ; apicup subsys set analytics master-max-memory-gb 2 ;
+cd ./myinstall ; apicup subsys set analytics master-storage-size-gb 1 ;
+cd ./myinstall ; apicup subsys set analytics storage-class velox-block  ;
+cd ./myinstall ; apicup endpoints set analytics analytics-ingestion ai.local ;
+cd ./myinstall ; apicup endpoints set analytics analytics-client ac.local ;
+cd ./myinstall ; apicup subsys create portal portal --k8s ;
+cd ./myinstall ; apicup endpoints set portal portal-admin padmin.local ;
+cd ./myinstall ; apicup endpoints set portal portal-www portal.px-chrisp.apicww.cloud ;
+cd ./myinstall ; apicup subsys set portal namespace "default" ;
+cd ./myinstall ; apicup subsys set portal registry localhost:5000
+cd ./myinstall ; apicup subsys set portal registry-secret apiconnect-image-pull-secret ;
+cd ./myinstall ; apicup subsys set mgmt registry localhost:5000
+cd ./myinstall ; apicup subsys set mgmt registry-secret apiconnect-image-pull-secret ;
+cd ./myinstall ; apicup subsys set analytics registry localhost:5000
+cd ./myinstall ; apicup subsys set analytics registry-secret apiconnect-image-pull-secret ;
+cd ./myinstall ; apicup subsys set gw registry localhost:5000
+cd ./myinstall ; apicup subsys set gw registry-secret apiconnect-image-pull-secret ;
+cd ./myinstall ; apicup subsys set gw mode demo
+cd ./myinstall ; apicup subsys set mgmt mode demo
+cd ./myinstall ; apicup subsys set portal mode demo
+cd ./myinstall ; apicup subsys set analytics mode demo
+cd myinstall  ; apicup subsys install mgmt
+Loaded user provided certificates
+Loaded previously generated certificates
+Generated root-ca CA
+Generated mgmt-ca CA
+Generated ingress-ca CA
+Generated mgmt-db-ca CA
+Generated consumer-api certificate
+Generated migration-client certificate
+Generated platform-api certificate
+Generated service-server certificate
+Generated analytics-client-client certificate
+Generated cloud-admin-ui certificate
+Generated db-server certificate
+Generated portal-client certificate
+Generated api-manager-ui certificate
+Generated db-client certificate
+Generated service-client certificate
+Generated service-plugin certificate
+Generated analytics-ingestion-client certificate
+Installation plan created
+Installed chart cassandra-operator
+Installed chart apiconnect
+Local user registry schema creation job succeeded
+Local user registry service online
+Management service schema creation job succeeded
+Management service service online
+Authentication gateway service online
+cd myinstall ; apicup subsys install gw
+Loaded user provided certificates
+Loaded previously generated certificates
+Generated gw-ca CA
+Generated api-gateway-ingress certificate
+Generated apic-gw-service-ingress certificate
+Generated gateway-peering certificate
+Installation plan created
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Installed chart dynamic-gateway-service
+cd myinstall ; apicup subsys install analytics
+Loaded user provided certificates
+Loaded previously generated certificates
+Generated analytics-ca CA
+Generated analytics-client-ingress certificate
+Generated analytics-ingestion-ingress certificate
+Generated service-server certificate
+Generated service-client certificate
+Installation plan created
+Installed chart apic-analytics
+Analytics client service online
+cd myinstall ; apicup subsys install portal
+Loaded user provided certificates
+Loaded previously generated certificates
+Generated portal-ca CA
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Generated portal-db-ca CA
+Generated apim-client certificate
+Generated portal-www-ingress certificate
+Generated service-server certificate
+Generated service-client certificate
+Generated portal-admin-ingress certificate
+Installation plan created
+Installed chart apic-portal
+sh bin/changepassword.sh cm.px-chrisp.apicww.cloud "chris.phillips@uk.ibm.com" "!n0r1t5@C"
+{
+    "type": "me",
+    "api_version": "2.0.0",
+    "name": "4c1dd3e6-9e9e-48bb-9494-b2fcd98c7dd4",
+    "state": "enabled",
+    "email": "chris.phillips@uk.ibm.com",
+    "first_name": "Cloud",
+    "force_password_change": true,
+    "last_name": "Owner",
+    "username": "admin",
+    "url": "https://cm.px-chrisp.apicww.cloud/api/user-registries/30ae6f75-cf12-4532-96e2-adf0f0feb0e6/f5e5160e-dabc-4a8b-b4df-fcd05cc6fb1f/users/4c1dd3e6-9e9e-48bb-9494-b2fcd98c7dd4"
+}sh bin/createDpService.sh cm.px-chrisp.apicww.cloud  "!n0r1t5@C" gw.px-chrisp.apicww.cloud gwd.px-chrisp.apicww.cloud  ac.local	
+--------
+get access token
+--------
+--------
+get integration_ep
+--------
+{"status":401,"message":["Unauthorized"]}
+--------
+null
+--------
+---------
+Create gateway Service
+---------
+---------
+Create Analytics Service
+---------
+---------
+Create Mail Server
+---------
+---------
+setReplyTo
+---------
+Handling connection for 5000
+{"status":401,"message":["Unauthorized"]}
+Handling connection for 5000
+Handling connection for 5000
+---------
+create portal
+---------
+Makefile:108: recipe for target 'configureAPIC' failed
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000
+Handling connection for 5000

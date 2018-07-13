@@ -1,0 +1,16 @@
+export NAMESPACE="default"
+export ver=3.1
+export admin_email="chris.phillips@uk.ibm.com"
+export admin_pass="!n0r1t5@C"
+export ep_api=api.px-chrisp.apicww.cloud
+export ep_apim=apim.px-chrisp.apicww.cloud
+export ep_cm=cm.px-chrisp.apicww.cloud
+export ep_consumer=consumer.px-chrisp.apicww.cloud
+export ep_gw=gw.px-chrisp.apicww.cloud
+export ep_gwd=gwd.px-chrisp.apicww.cloud 
+export ep_ai=a7s-in.px-chrisp.local
+export ep_ac=a7s.px-chrisp.local
+export ep_padmin=portal-admin.px-chrisp.local
+export ep_portal=portal.px-chrisp.apicww.cloud
+export smtpServer=x.apicww.cloud
+export smtpServerPort=25
