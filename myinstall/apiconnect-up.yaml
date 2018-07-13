@@ -1,0 +1,114 @@
+kind: apiconnect-up
+subsystems:
+  analytics:
+    endpoints:
+    - hostname: a7s-in.px-chrisp.local
+      name: analytics-ingestion
+    - hostname: a7s.px-chrisp.local
+      name: analytics-client
+    kvs:
+      coordinating-max-memory-gb: "6"
+      data-max-memory-gb: "2"
+      data-storage-size-gb: "10"
+      enable-persistence: "true"
+      extra-values-file: ""
+      ingress-type: ingress
+      master-max-memory-gb: "2"
+      master-storage-size-gb: "1"
+      mode: demo
+      namespace: default
+      registry: localhost:5000
+      registry-secret: apiconnect-image-pull-secret
+      storage-class: velox-block
+    target: k8s
+    type: analytics
+  gw:
+    endpoints:
+    - hostname: gw.px-chrisp.apicww.cloud
+      name: api-gateway
+    - hostname: gwd.px-chrisp.apicww.cloud
+      name: apic-gw-service
+    kvs:
+      enable-tms: "off"
+      extra-values-file: ""
+      image-pull-policy: Always
+      image-repository: ""
+      image-tag: latest
+      ingress-type: ingress
+      max-cpu: "2"
+      max-memory-gb: "4"
+      mode: demo
+      namespace: default
+      registry: localhost:5000
+      registry-secret: apiconnect-image-pull-secret
+      replica-count: "3"
+      storage-class: '-'
+      tms-peering-storage-size-gb: "10"
+      v5-compatibility-mode: "on"
+    target: k8s
+    type: gateway
+  mgmt:
+    endpoints:
+    - hostname: api.px-chrisp.apicww.cloud
+      name: platform-api
+    - hostname: consumer.px-chrisp.apicww.cloud
+      name: consumer-api
+    - hostname: cm.px-chrisp.apicww.cloud
+      name: cloud-admin-ui
+    - hostname: apim.px-chrisp.apicww.cloud
+      name: api-manager-ui
+    kvs:
+      cassandra-backup-auth-secret: ""
+      cassandra-backup-host: ""
+      cassandra-backup-path: /backups
+      cassandra-backup-port: "22"
+      cassandra-backup-protocol: sftp
+      cassandra-backup-schedule: 0 0 * * *
+      cassandra-cluster-size: "1"
+      cassandra-max-memory-gb: "2"
+      cassandra-postmortems-auth-secret: ""
+      cassandra-postmortems-host: ""
+      cassandra-postmortems-path: /cassandra-postmortems
+      cassandra-postmortems-port: "22"
+      cassandra-postmortems-protocol: sftp
+      cassandra-volume-size-gb: "50"
+      create-crd: "true"
+      enable-persistence: "true"
+      external-cassandra-host: ""
+      extra-values-file: ""
+      ingress-type: ingress
+      migration-image-repository: ""
+      migration-image-tag: ""
+      migration-volume-size-gb: ""
+      mode: demo
+      namespace: default
+      portal-base-uri: http://myportal.mycompany.com
+      registry: localhost:5000
+      registry-secret: apiconnect-image-pull-secret
+      storage-class: velox-block
+    target: k8s
+    type: management
+  portal:
+    endpoints:
+    - hostname: portal-admin.px-chrisp.local
+      name: portal-admin
+    - hostname: portal.px-chrisp.apicww.cloud
+      name: portal-www
+    kvs:
+      admin-storage-size-gb: "1"
+      backup-storage-size-gb: "1"
+      db-logs-storage-size-gb: "1"
+      db-root-pw: root
+      db-storage-size-gb: "5"
+      enable-persistence: "true"
+      extra-values-file: ""
+      ingress-type: ingress
+      mode: demo
+      namespace: default
+      registry: localhost:5000
+      registry-secret: apiconnect-image-pull-secret
+      storage-class: '-'
+      www-storage-size-gb: "1"
+    target: k8s
+    type: portal
+version: 3.0.0+build.2018.3-132.time.2018-07-05T22-29-10Z.commit.42d0836
