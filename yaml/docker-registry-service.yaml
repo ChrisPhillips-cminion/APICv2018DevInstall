@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: docker-registry
+    chart: docker-registry-1.5.0
+  name: registry-docker-registry-extip
+  namespace: default
+  selfLink: /api/v1/namespaces/default/services/registry-docker-registry
+spec:
+  clusterIP: 10.102.207.18
+  externalIPs:
+  - 10.218.200.11
+  - 10.218.200.13
+  - 10.218.200.12
+  ports:
+  - name: registry
+    port: 5000
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: docker-registry
+    release: registry
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
