@@ -15,7 +15,7 @@ buildK8s: clean pre
 	sudo kubeadm init --apiserver-advertise-address=0.0.0.0 --pod-network-cidr=172.17.0.0/16
 	mkdir -p $(HOME)/.kube
 	sudo cp -f /etc/kubernetes/admin.conf $(HOME)/.kube/config
-	sudo chown  chrisp $(HOME)/.kube/config
+	sudo chown  $(USER) $(HOME)/.kube/config
 	kubectl apply -f yaml/calico.yaml
 	kubectl taint nodes --all node-role.kubernetes.io/master-
 	#kubectl apply -f yaml/registry.yml && sleep 100 &
